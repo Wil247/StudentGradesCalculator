@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculador de Notas por Bloque</title>
+  <script src="https://cdn.tailwindcss.com"></script> 
+  <style>
+    input[type="number"] {
+      width: 60px;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .bg-red {
+      background-color: #fee2e2 !important; /* Rojo claro */
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      white-space: nowrap;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+    }
+
+    th {
+      background-color: #f9fafb;
+      font-weight: bold;
+    }
+
+    .bloque1 { background-color: #fefce8; } /* Pastel amarillo */
+    .bloque2 { background-color: #bfdbfe; } /* Azul claro */
+    .bloque3 { background-color: #ddd6fe; } /* Púrpura claro */
+    .bloque4 { background-color: #fbc2eb; } /* Rosado claro */
+    .estudiante-row { background-color: #bbf7d0; } /* Verde claro */
+  </style>
+
+  <script>
+  function disableInspect(e) {
+    if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73)) {
+      return false;
+    }
+  }
+</script>
+</head>
+<body oncontextmenu="return false" onkeydown="return disableInspect(event)" class="bg-gray-100 min-h-screen p-6" >
+
+  <div class="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center">Calculador de Notas por Bloque</h1>
+
+    <!-- Configuración inicial -->
+<div class="mb-6 flex justify-center gap-2">
+  <label for="numEstudiantes" class="font-medium">¿Cuántos estudiantes?</label>
+  <input type="number" id="numEstudiantes" min="1" value="1" class="border px-3 py-1 rounded w-16">
+  <button onclick="inicializarTabla()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded">Generar Estudiantes</button>
+  <button onclick="agregarEstudiante()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded">Agregar Estudiante</button>
+  <button onclick="limpiarDatos()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded">Limpiar Datos</button>
+</div>
+
+    <!-- Tabla de entrada -->
+    <div class="overflow-x-auto">
+      <table id="tablaEntrada" class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-md">
+        <thead class="bg-gray-50">
+          <tr>
+            <th rowspan="2" class="py-2 px-4 text-left">Estudiante</th>
+            
+            <!-- Bloque 1 -->
+            <th colspan="8" class="py-2 px-4 text-center bg-yellow-100">Bloque 1</th>
+
+            <!-- Bloque 2 -->
+            <th colspan="8" class="py-2 px-4 text-center bg-blue-100">Bloque 2</th>
+
+            <!-- Bloque 3 -->
+            <th colspan="8" class="py-2 px-4 text-center bg-purple-100">Bloque 3</th>
+
+            <!-- Bloque 4 -->
+            <th colspan="8" class="py-2 px-4 text-center bg-pink-100">Bloque 4</th>
+          </tr>
+          <tr class="bg-gray-50">
+            <!-- Bloque 1 -->
+            <th class="text-xs font-normal bg-yellow-100">P1</th><th class="text-xs font-normal bg-yellow-100">RP1</th>
+            <th class="text-xs font-normal bg-yellow-100">P2</th><th class="text-xs font-normal bg-yellow-100">RP2</th>
+            <th class="text-xs font-normal bg-yellow-100">P3</th><th class="text-xs font-normal bg-yellow-100">RP3</th>
+            <th class="text-xs font-normal bg-yellow-100">P4</th><th class="text-xs font-normal bg-yellow-100">RP4</th>
+
+            <!-- Bloque 2 -->
+            <th class="text-xs font-normal bg-blue-100">P1</th><th class="text-xs font-normal bg-blue-100">RP1</th>
+            <th class="text-xs font-normal bg-blue-100">P2</th><th class="text-xs font-normal bg-blue-100">RP2</th>
+            <th class="text-xs font-normal bg-blue-100">P3</th><th class="text-xs font-normal bg-blue-100">RP3</th>
+            <th class="text-xs font-normal bg-blue-100">P4</th><th class="text-xs font-normal bg-blue-100">RP4</th>
+
+            <!-- Bloque 3 -->
+            <th class="text-xs font-normal bg-purple-100">P1</th><th class="text-xs font-normal bg-purple-100">RP1</th>
+            <th class="text-xs font-normal bg-purple-100">P2</th><th class="text-xs font-normal bg-purple-100">RP2</th>
+            <th class="text-xs font-normal bg-purple-100">P3</th><th class="text-xs font-normal bg-purple-100">RP3</th>
+            <th class="text-xs font-normal bg-purple-100">P4</th><th class="text-xs font-normal bg-purple-100">RP4</th>
+
+            <!-- Bloque 4 -->
+            <th class="text-xs font-normal bg-pink-100">P1</th><th class="text-xs font-normal bg-pink-100">RP1</th>
+            <th class="text-xs font-normal bg-pink-100">P2</th><th class="text-xs font-normal bg-pink-100">RP2</th>
+            <th class="text-xs font-normal bg-pink-100">P3</th><th class="text-xs font-normal bg-pink-100">RP3</th>
+            <th class="text-xs font-normal bg-pink-100">P4</th><th class="text-xs font-normal bg-pink-100">RP4</th>
+          </tr>
+        </thead>
+        <tbody id="bodyEntrada" class="bg-white divide-y divide-gray-200"></tbody>
+      </table>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="mt-8 overflow-x-auto">
+      <h2 class="text-xl font-semibold mb-4">Promedios Finales</h2>
+      <table id="tablaResultados" class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-md">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="py-2 px-4 text-left">Estudiante</th>
+            <th class="py-2 px-4 text-left">PC1</th>
+            <th class="py-2 px-4 text-left">PC2</th>
+            <th class="py-2 px-4 text-left">PC3</th>
+            <th class="py-2 px-4 text-left">PC4</th>
+            <th class="py-2 px-4 text-left">CALIF. FINAL</th>
+          </tr>
+        </thead>
+        <tbody id="bodyResultados" class="bg-white divide-y divide-gray-200"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let contadorEstudiantes = 1;
+
+    function agregarEstudiante() {
+      const bodyEntrada = document.getElementById('bodyEntrada');
+      const tr = document.createElement('tr');
+
+      // Campos de entrada por bloque
+      tr.innerHTML = `
+        <td class="estudiante-row"><strong>${contadorEstudiantes}</strong></td>
+
+        <!-- Bloque 1 -->
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="P1"></td>
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="RP1"></td>
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="P2"></td>
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="RP2"></td>
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="P3"></td>
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="RP3"></td>
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="P4"></td>
+        <td class="bloque1"><input type="number" min="0" max="100" class="nota-input" data-bloque="1" data-col="RP4"></td>
+
+        <!-- Bloque 2 -->
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="P1"></td>
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="RP1"></td>
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="P2"></td>
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="RP2"></td>
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="P3"></td>
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="RP3"></td>
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="P4"></td>
+        <td class="bloque2"><input type="number" min="0" max="100" class="nota-input" data-bloque="2" data-col="RP4"></td>
+
+        <!-- Bloque 3 -->
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="P1"></td>
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="RP1"></td>
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="P2"></td>
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="RP2"></td>
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="P3"></td>
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="RP3"></td>
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="P4"></td>
+        <td class="bloque3"><input type="number" min="0" max="100" class="nota-input" data-bloque="3" data-col="RP4"></td>
+
+        <!-- Bloque 4 -->
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="P1"></td>
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="RP1"></td>
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="P2"></td>
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="RP2"></td>
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="P3"></td>
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="RP3"></td>
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="P4"></td>
+        <td class="bloque4"><input type="number" min="0" max="100" class="nota-input" data-bloque="4" data-col="RP4"></td>
+      `;
+      bodyEntrada.appendChild(tr);
+
+      // Asignar eventos a los inputs
+      const inputs = tr.querySelectorAll('.nota-input');
+      inputs.forEach(input => {
+        input.addEventListener('input', () => {
+          const valor = parseFloat(input.value);
+          input.classList.remove('bg-red');
+          if (!isNaN(valor) && valor < 70) {
+            input.classList.add('bg-red');
+          }
+          calcularResultados();
+        });
+
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === 'Tab') {
+            e.preventDefault();
+
+            const allInputs = Array.from(document.querySelectorAll('.nota-input'));
+            const currentIndex = allInputs.indexOf(this);
+
+            let nextIndex = -1;
+            const valor = parseFloat(this.value);
+
+            if (this.dataset.col.startsWith('P')) {
+              if (valor >= 70) {
+                nextIndex = currentIndex + 2; // Salta a próxima "P"
+              } else {
+                nextIndex = currentIndex + 1; // Va a RP
+              }
+            } else {
+              nextIndex = currentIndex + 1;
+            }
+
+            if (allInputs[nextIndex]) {
+              allInputs[nextIndex].focus();
+              allInputs[nextIndex].select();
+            }
+          }
+        });
+      });
+
+      contadorEstudiantes++;
+    }
+
+    function limpiarDatos() {
+  // Limpiar todos los inputs
+  const allInputs = document.querySelectorAll('.nota-input');
+  allInputs.forEach(input => {
+    input.value = '';
+    input.classList.remove('bg-red'); // Quitar color rojo si estaba activo
+  });
+
+  // Limpiar resultados
+  const bodyFinal = document.getElementById('bodyResultados');
+  bodyFinal.innerHTML = '';
+
+  // Opcional: Reiniciar contador de estudiantes
+  contadorEstudiantes = 1;
+
+  // Opcional: Generar un estudiante vacío después de limpiar
+  document.getElementById('bodyEntrada').innerHTML = '';
+  agregarEstudiante(); // Esto rellena una fila limpia con 1 estudiante
+
+  // Opcional: Restablecer valor del input de cantidad
+  document.getElementById('numEstudiantes').value = 1;
+}
+
+    function inicializarTabla() {
+      const cantidad = parseInt(document.getElementById('numEstudiantes').value);
+      if (!cantidad || cantidad <= 0) {
+        alert("Por favor ingresa una cantidad válida de estudiantes.");
+        return;
+      }
+
+      document.getElementById('bodyEntrada').innerHTML = '';
+      document.getElementById('bodyResultados').innerHTML = '';
+
+      for (let i = 1; i <= cantidad; i++) {
+        agregarEstudiante();
+      }
+    }
+
+    function calcularResultados() {
+      const estudiantes = document.querySelectorAll('#bodyEntrada tr');
+      const bodyFinal = document.getElementById('bodyResultados');
+      bodyFinal.innerHTML = '';
+
+      estudiantes.forEach((row, idx) => {
+        const inputs = row.querySelectorAll('.nota-input');
+        const valores = {};
+
+        inputs.forEach(input => {
+          const bloque = input.dataset.bloque;
+          const col = input.dataset.col;
+          valores[`${bloque}-${col}`] = parseFloat(input.value) || 0;
+        });
+
+        // Función para obtener nota usando RP si P < 70
+        const getValor = (bloque, col) => {
+          const P = valores[`${bloque}-${col}`];
+          const RP = valores[`${bloque}-RP${col.slice(1)}`];
+          return P >= 70 ? P : RP;
+        };
+
+        // Calcular PC1 a partir de Bloque 1
+        const pc1Values = ['P1', 'P2', 'P3', 'P4'].map(col => getValor(1, col));
+        const PC1 = Math.round(pc1Values.reduce((a, b) => a + b, 0) / 4);
+
+        // Calcular PC2 a partir de Bloque 2
+        const pc2Values = ['P1', 'P2', 'P3', 'P4'].map(col => getValor(2, col));
+        const PC2 = Math.round(pc2Values.reduce((a, b) => a + b, 0) / 4);
+
+        // Calcular PC3 a partir de Bloque 3
+        const pc3Values = ['P1', 'P2', 'P3', 'P4'].map(col => getValor(3, col));
+        const PC3 = Math.round(pc3Values.reduce((a, b) => a + b, 0) / 4);
+
+        // Calcular PC4 a partir de Bloque 4
+        const pc4Values = ['P1', 'P2', 'P3', 'P4'].map(col => getValor(4, col));
+        const PC4 = Math.round(pc4Values.reduce((a, b) => a + b, 0) / 4);
+
+        // Calificación final
+        const CF = Math.round((PC1 + PC2 + PC3 + PC4) / 4);
+
+        // Mostrar resultados
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${PC1}</td>
+          <td>${PC2}</td>
+          <td>${PC3}</td>
+          <td>${PC4}</td>
+          <td><strong>${CF}</strong></td>
+        `;
+        bodyFinal.appendChild(tr);
+      });
+    }
+
+    window.onload = () => {
+      // Inicializar con un estudiante por defecto
+      document.getElementById('numEstudiantes').value = 1;
+      inicializarTabla();
+    };
+  </script>
+<!-- Footer -->
+<footer class="mt-10 w-full bg-gray-800 text-white text-center py-4 rounded-md shadow-inner">
+  <p>Made by Prof. Wilfran L Decena | Contacto: (809) 818 - 0829</p>
+</footer>
+</body>
+</html>
